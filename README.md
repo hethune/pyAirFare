@@ -27,3 +27,4 @@ returning flights on 2014-09-29 and 2014-09-30
 `./query.py --from "pek, hkg" --to "sfo" --startDate "2015-01-03" --startDateRange 2 --alliance "STAR"`
 
 #### Output
+![Output HTML Screenshot](https://www.dropbox.com/s/mdycsyhla4ndj0q/Screenshot%202014-09-21%2015.05.51.png?dl=0)

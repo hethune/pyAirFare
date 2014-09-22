@@ -37,7 +37,7 @@ def html_table(lol):
     <th> To </th>
     <th> Price </th>
     <th> Duration(mins) </th>
-    <th colspan="20"> Flight Segments</th>
+    <th colspan="20"> Flight Segments (From, To, Flight Number, Class, Remaining Tickets</th>
     </tr></thead> 
     <tbody>
     '''

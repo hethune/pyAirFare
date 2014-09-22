@@ -9,6 +9,7 @@ Allow you query flight fares from command line
 * run `query.py --from <origin1, origin2...> -to <dest1, dest2...> --startDate <YYYY-MM-DD> --startDateRange <int> --returnDate <YYYY-MM-DD> --returnDateRange <int> --alliance <STAR, SKYTEAM, ONEWORLD>`
 
 * The results will be stored in a html file under `data/html`
+* The round trip query currently has a bug
 
 ### Parameters
 

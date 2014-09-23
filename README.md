@@ -9,7 +9,8 @@ Allow you query flight fares from command line
 * run `query.py --from <origin1, origin2...> -to <dest1, dest2...> --startDate <YYYY-MM-DD> --startDateRange <int> --returnDate <YYYY-MM-DD> --returnDateRange <int> --alliance <STAR, SKYTEAM, ONEWORLD>`
 
 * The results will be stored in a html file under `data/html`
-* ***The round trip query currently has a bug***
+
+* Tje results table is sortable by clicking on the table header
 
 ### Parameters
 
@@ -29,3 +30,6 @@ returning flights on 2014-09-29 and 2014-09-30
 
 #### Output
 ![Output HTML Screenshot](https://www.dropbox.com/s/mdycsyhla4ndj0q/Screenshot%202014-09-21%2015.05.51.png?dl=1)
+
+### Bugs
+- [ ] Output table is not sortable in Chrome (works in Firefox and Safari)

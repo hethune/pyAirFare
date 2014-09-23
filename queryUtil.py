@@ -179,7 +179,7 @@ def generateRequestJSON(origin, destination, maxStop, date, alliance = "", maxCo
 
     return request
 
-def purify(raw_result, numberOfFlightsToShow):
+def purify(raw_result, numberOfFlightsToShow, maxTripDuration):
     result = {}
     try:
         result['startDate'] = raw_result['startDate']
@@ -193,7 +193,7 @@ def purify(raw_result, numberOfFlightsToShow):
     # Get best price
     tmp_price_slice = []
     try:
-        tmp_price_slice = sorted([x for x in raw_result['trips']['tripOption'] if sum(y['duration'] for y in x['slice']) < 1200], key=lambda trip: float(sub("[a-z]|[A-Z]", "", trip['saleTotal'])))[0:numberOfFlightsToShow]
+        tmp_price_slice = sorted([x for x in raw_result['trips']['tripOption'] if sum(y['duration'] for y in x['slice']) < maxTripDuration], key=lambda trip: float(sub("[a-z]|[A-Z]", "", trip['saleTotal'])))[0:numberOfFlightsToShow]
     except KeyError:
         print "key error in soring price"
         pass
@@ -240,7 +240,7 @@ def queryRoundTrip(origins, destinations, startDate, startDateRange, returnDate,
 
     saveToFile(results, '/tmp/pyFare_round_trip_results_' + '_' + str(int(time.time())) + '.json')
     # Process raw data
-    processResultJson(results)
+    processResultJson(results, 0)
 
 def queryOneWayTrip(origins, destinations, startDate, startDateRange, alliance):
     requests = []
@@ -266,7 +266,7 @@ def queryOneWayTrip(origins, destinations, startDate, startDateRange, alliance):
 
     saveToFile(results, '/tmp/pyFare_oneway_trip_results_' + origins[0] + '_' + time.strftime("%Y%m%d") + "_" + str(int(time.time())) + '.json')
     # Process raw data
-    processResultJson(results)
+    processResultJson(results, 1)
 
 
 def processFile(fileName):
@@ -276,13 +276,25 @@ def processFile(fileName):
         results = json.load(json_file)
     finally:
         json_file.close()
-    processResultJson(results)
+    processResultJson(results, 2)
 
-def processResultJson(results):
+def processResultJson(results, isOneWay = 2):
     purified_results = []
 
+    maxTripDuration = 1200
+
+    if isOneWay == 1:
+        maxTripDuration = 1200
+    elif isOneWay == 0:
+        maxTripDuration = 2400
+    elif isOneWay == 2:
+        if results[0]['returnDate'] == '':
+            maxTripDuration = 1200
+        else:
+            maxTripDuration = 2400
+
     for result in results:
-        purified_results.append(purify(result, 5))
+        purified_results.append(purify(result, 5, maxTripDuration))
 
     aggregated_results = []
     for result in purified_results:

@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+from dateutil import parser
 from compiler.ast import flatten
 from itertools import chain
 from re import sub
@@ -37,7 +38,7 @@ def html_table(lol):
     <th> To </th>
     <th> Price </th>
     <th> Duration(mins) </th>
-    <th colspan="20"> Flight Segments (From, To, Flight Number, Class, Remaining Tickets</th>
+    <th colspan="20"> Flight Segments (From, To, Flight Number, Takeoff, Class, Remaining Tickets</th>
     </tr></thead> 
     <tbody>
     '''
@@ -205,7 +206,7 @@ def purify(raw_result, numberOfFlightsToShow, maxTripDuration):
             price_slice['saleTotal'] = float(sub("[a-z]|[A-Z]","", tmp['saleTotal']))
             price_slice['duration'] = sum(x['duration'] for x in tmp['slice'])
             price_slice['flights'] = list(map(lambda x: list(map(lambda y: {"flight": y['flight']['carrier'] + y['flight']['number'], "origin": y['leg'][0]['origin'],
-                "destination": y['leg'][0]['destination'], "class": y['bookingCode'], "remaining": y['bookingCodeCount']}, x['segment'])), tmp['slice']))
+                "destination": y['leg'][0]['destination'], "takeoff": parser.parse(y['leg'][0]['departureTime']).strftime("%H:%M"), "class": y['bookingCode'], "remaining": y['bookingCodeCount']}, x['segment'])), tmp['slice']))
         except KeyError:
             print "key error in price slice"
             pass
@@ -217,10 +218,9 @@ def aggregate(purified_results, numberOfFlightsToShow):
     result = sorted(purified_results, key=lambda x: math.fsum(float(sub("[a-z]|[A-Z]","", y['saleTotal'])) for y in x['slice']))[0: numberOfFlightsToShow]
     return result
 
-def queryRoundTrip(origins, destinations, startDate, startDateRange, returnDate, returnDateRange, alliance):
+def queryRoundTrip(origins, destinations, startDate, startDateRange, returnDate, returnDateRange, maxStops, alliance):
     requests = []
     results = []
-    maxStops = 1
     maxConnectionDuration = 300
     for i in range(startDateRange):
         for j in range(returnDateRange):
@@ -294,7 +294,7 @@ def processResultJson(results, isOneWay = 2):
             maxTripDuration = 2400
 
     for result in results:
-        purified_results.append(purify(result, 5, maxTripDuration))
+        purified_results.append(purify(result, 50, maxTripDuration))
 
     aggregated_results = []
     for result in purified_results:

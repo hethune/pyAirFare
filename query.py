@@ -6,7 +6,7 @@ from queryUtil import queryRoundTrip, queryOneWayTrip
 from pprint import pprint
 
 def usage():
-    print 'query.py --from <origin1, origin2...> -to <dest1, dest2...> --startDate <YYYY-MM-DD> --startDateRange <int> --returnDate <YYYY-MM-DD> --returnDateRange <int> --alliance <STAR, SKYTEAM, ONEWORLD>'
+    print 'query.py --from <origin1, origin2...> -to <dest1, dest2...> --startDate <YYYY-MM-DD> --startDateRange <int> --returnDate <YYYY-MM-DD> --returnDateRange <int> --maxStop <number of maxium stops> --alliance <STAR, SKYTEAM, ONEWORLD>'
 
 def readParms(argv):
     origin = ''
@@ -16,8 +16,9 @@ def readParms(argv):
     startDateRange = None
     returnDateRange = None
     alliance = ""
+    maxStop = 0
     try:
-        opts, args = getopt.getopt(argv,"f:t:s:sr:a:r:rr",["from=","to=","startDate=","startDateRange=", "alliance=","returnDate=","returnDateRange="])
+        opts, args = getopt.getopt(argv,"f:t:s:sr:a:r:rr:ms",["from=","to=","startDate=","startDateRange=", "alliance=","returnDate=","returnDateRange=","maxStop="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -34,14 +35,16 @@ def readParms(argv):
             alliance = arg
         elif opt in ("-r", "--returnDate"):
             returnDate = datetime.strptime(arg, "%Y-%m-%d")
-        elif opt in ("-sr", "--returnDateRange"):
+        elif opt in ("-rr", "--returnDateRange"):
             returnDateRange = int(arg)
+        elif opt in ("-ms", "--maxStop"):
+            maxStop = int(arg)
 
     if origin == '' or destination == '' or startDate == '' or startDateRange == None:
         usage()
         sys.exit(2)
 
-    return {'origin': origin, 'destination': destination, 'startDate':startDate, 'startDateRange':startDateRange, 'alliance': alliance, 'returnDate': returnDate, 'returnDateRange': returnDateRange}
+    return {'origin': origin, 'destination': destination, 'startDate':startDate, 'startDateRange':startDateRange, 'alliance': alliance, 'returnDate': returnDate, 'returnDateRange': returnDateRange, 'maxStop': maxStop}
 
 
 def main(argv):
@@ -53,12 +56,13 @@ def main(argv):
     startDateRange = parms['startDateRange']
     returnDateRange = parms['returnDateRange']
     alliance = parms['alliance']
+    maxStop = parms['maxStop']
 
     if (not destinations or returnDate == ''):
         pass
         # queryOneWayTrip(origins, destinations, startDate, startDateRange, alliance)
     else:
-        queryRoundTrip(origins, destinations, startDate, startDateRange, returnDate, returnDateRange, alliance)
+        queryRoundTrip(origins, destinations, startDate, startDateRange, returnDate, returnDateRange, maxStop, alliance)
 
 
 if __name__ == "__main__":
